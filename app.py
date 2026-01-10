@@ -13,7 +13,7 @@ GOOGLE_API_KEY = os.environ.get("AIzaSyDIxtMDL9APHIFU1AIEtsfzrHmlI1slpbI")
 genai.configure(api_key=GOOGLE_API_KEY)
 
 # ফ্রি মডেল ব্যবহার করা হচ্ছে
-model = genai.GenerativeModel('gemini-3-flash-preview')
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
