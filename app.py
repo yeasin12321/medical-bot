@@ -7,7 +7,7 @@ app = Flask(__name__)
 # ==========================================
 # আপনার সর্বশেষ সঠিক API Key বসানো হয়েছে
 # ==========================================
-GOOGLE_API_KEY = "AIzaSyAKnOK2qeqDSyPy41sC5ZXQ1-KxLU_8BNY"
+GOOGLE_API_KEY = "AIzaSyCNc_lToHgzsBi9DcGTndB26QZfx6CFrSY"
 
 genai.configure(api_key=GOOGLE_API_KEY)
 
