@@ -13,7 +13,8 @@ GOOGLE_API_KEY = os.environ.get("AIzaSyDIxtMDL9APHIFU1AIEtsfzrHmlI1slpbI")
 genai.configure(api_key=GOOGLE_API_KEY)
 
 # ফ্রি মডেল ব্যবহার করা হচ্ছে
-model = genai.GenerativeModel('gemini-1.5-flash')
+# আপনার লিস্টে থাকা লাইট মডেল
+model = genai.GenerativeModel('gemini-2.5-flash-lite-preview-09-2025')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
