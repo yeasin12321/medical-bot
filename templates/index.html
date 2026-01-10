@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yeasin Diagnostics Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* হেডার ডিজাইন */
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #0056b3;
+            margin: 0;
+            text-transform: uppercase;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            margin: 5px 0 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* আপলোড এরিয়া */
+        .upload-area {
+            border: 2px dashed #0056b3;
+            padding: 40px;
+            text-align: center;
+            background: #eef4fb;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .upload-area:hover {
+            background: #e0ebf5;
+        }
+
+        input[type="file"] {
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background: #fff;
+            border-radius: 5px;
+        }
+
+        /* বাটন */
+        .btn-analyze {
+            background: #0056b3;
+            color: white;
+            padding: 12px 35px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 15px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-analyze:hover {
+            background: #004494;
+            transform: translateY(-2px);
+        }
+
+        .btn-pdf {
+            background: #e74c3c;
+            color: white;
+            padding: 10px 25px;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: bold;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-pdf:hover {
+            background: #c0392b;
+        }
+
+        /* রিপোর্ট সেকশন */
+        .report-box {
+            margin-top: 30px;
+            border: 1px solid #ddd;
+            padding: 30px;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .report-meta {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .report-content {
+            white-space: pre-wrap;
+            line-height: 1.8;
+            text-align: justify;
+            font-size: 16px;
+            color: #2c3e50;
+        }
+
+        /* সিগনেচার */
+        .signature {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 80px;
+            padding-top: 20px;
+        }
+
+        .sign-block {
+            text-align: center;
+            width: 200px;
+        }
+
+        .sign-line {
+            border-top: 1px solid #333;
+            padding-top: 5px;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 12px;
+            color: #aaa;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Yeasin Medical Diagnostics</h1>
+            <p>Advanced Automated Radiology System | Authored by <b>Yeasin Kabir</b></p>
+        </div>
+
+        <form action="/" method="post" enctype="multipart/form-data">
+            <div class="upload-area">
+                <h3 style="color: #0056b3; margin-top: 0;">📤 রোগীর এক্স-রে আপলোড করুন</h3>
+                <p style="color: #666; font-size: 13px;">সঠিক রিপোর্টের জন্য পরিষ্কার ছবি দিন</p>
+                <input type="file" name="xray_image" accept="image/*" required>
+                <br>
+                <button type="submit" class="btn-analyze">ANALYSIS শুরু করুন</button>
+            </div>
+        </form>
+
+        {% if error %}
+        <div
+            style="background: #fadbd8; color: #721c24; padding: 15px; border-radius: 5px; margin-top: 20px; text-align: center; border: 1px solid #f5c6cb;">
+            ⚠️ {{ error }}
+        </div>
+        {% endif %}
+
+        {% if report %}
+        <div style="text-align: center; margin-top: 30px;">
+            <h2 style="color: #27ae60;">✅ সাকসেসফুল! রিপোর্ট তৈরি হয়েছে</h2>
+            <button onclick="downloadPDF()" class="btn-pdf">📥 Download Official PDF</button>
+            <br><br>
+        </div>
+
+        <div id="printable-report" class="report-box">
+            <div class="report-meta">
+                <div><strong>Ref No:</strong> YK-AUTO/2026/BD</div>
+                <div><strong>Date:</strong>
+                    <script>document.write(new Date().toLocaleDateString())</script>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h2 style="margin: 0; color: #2c3e50; text-decoration: underline;">DIAGNOSTIC IMAGING REPORT</h2>
+                <small>Generated by Yeasin Diagnostics AI Core</small>
+            </div>
+
+            <div class="report-content">
+                {{ report }}
+            </div>
+
+            <div class="signature">
+                <div class="sign-block">
+                    <div class="sign-line">Radiology Department</div>
+                    <small style="color: #888;">(System Generated Finding)</small>
+                </div>
+                <div class="sign-block">
+                    <div class="sign-line">Yeasin Kabir</div>
+                    <small>Chief Administrator</small>
+                </div>
+            </div>
+
+            <p
+                style="text-align: center; font-size: 10px; color: #888; margin-top: 40px; border-top: 1px solid #eee; padding-top: 10px;">
+                Disclaimer: This report is assisting in nature. Please consult a physical doctor for final medication.
+            </p>
+        </div>
+        {% endif %}
+
+        <div class="footer">
+            System Developed & Maintained by <b>Yeasin Kabir</b> <br>
+            &copy; 2026 All Rights Reserved.
+        </div>
+    </div>
+
+    <script>
+        function downloadPDF() {
+            var element = document.getElementById('printable-report');
+            var opt = {
+                margin: 0.5,
+                filename: 'Medical_Report_Yeasin_Kabir.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+
+</body>
+
+</html>
