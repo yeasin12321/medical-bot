@@ -1,25 +1,20 @@
-import os  # <--- এটি নতুন যোগ হয়েছে
+import os
 from flask import Flask, render_template, request
 import google.generativeai as genai
 from PIL import Image
 
 app = Flask(__name__)
 
-# ==========================================
-# এখন আর সরাসরি চাবি বসানো নেই। এটি Render থেকে চাবি খুঁজে নেবে।
-# ==========================================
-GOOGLE_API_KEY = os.environ.get("AIzaSyDIxtMDL9APHIFU1AIEtsfzrHmlI1slpbI")
+# চাবি সরাসরি না বসিয়ে পরিবেশ থেকে নেওয়া হচ্ছে
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
 
 genai.configure(api_key=GOOGLE_API_KEY)
 
-# ফ্রি মডেল ব্যবহার করা হচ্ছে
-# আপনার লিস্টে থাকা লাইট মডেল
+# মডেল সেটআপ
 model = genai.GenerativeModel('gemini-2.5-flash-lite-preview-09-2025')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    # ... বাকি কোড আগের মতোই থাকবে ...
-    # (নিচের বাকি অংশে হাত দেওয়ার দরকার নেই)
     report = None
     error = None
 
