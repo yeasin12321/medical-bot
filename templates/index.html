@@ -1,255 +1,347 @@
 <!DOCTYPE html>
 <html lang="bn">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yeasin Diagnostics Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
+    <title>Yeasin Medical Diagnostics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #0891b2;
+            --dark: #164e63;
+            --light: #ecfeff;
+            --danger: #e11d48;
+            --scanner: #00ff41; /* হ্যাকার গ্রিন কালার */
+        }
+
         body {
             font-family: 'Hind Siliguri', sans-serif;
-            background: #f4f7f6;
+            background: linear-gradient(135deg, #f0fdfa 0%, #cffafe 100%);
+            min-height: 100vh;
             margin: 0;
-            padding: 20px;
-            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #334155;
         }
 
         .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            width: 95%;
+            max-width: 850px;
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
         }
 
-        /* হেডার ডিজাইন */
-        .header {
+        /* Header Style */
+        .brand-header {
             text-align: center;
-            border-bottom: 2px solid #0056b3;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
+            border-bottom: 2px dashed #cbd5e1;
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
-
-        .header h1 {
-            color: #0056b3;
+        
+        .brand-header h1 {
+            color: var(--dark);
+            font-size: 2.5rem;
             margin: 0;
-            text-transform: uppercase;
-            font-size: 24px;
-            letter-spacing: 1px;
+            letter-spacing: -1px;
         }
 
-        .header p {
-            margin: 5px 0 0;
-            color: #666;
-            font-size: 14px;
-        }
-
-        /* আপলোড এরিয়া */
-        .upload-area {
-            border: 2px dashed #0056b3;
-            padding: 40px;
-            text-align: center;
-            background: #eef4fb;
+        .helpline-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #22c55e;
+            color: white;
+            padding: 5px 12px;
             border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: pulse-green 2s infinite;
+        }
+
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+
+        /* Upload Area */
+        .upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .upload-btn {
+            border: 2px dashed #94a3b8;
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            background: #f8fafc;
+        }
+
+        .upload-btn:hover {
+            border-color: var(--primary);
+            background: var(--light);
+        }
+
+        .camera-btn {
+            background: var(--dark);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             transition: 0.3s;
         }
 
-        .upload-area:hover {
-            background: #e0ebf5;
+        .camera-btn:hover {
+            background: var(--primary);
         }
 
-        input[type="file"] {
-            margin: 15px 0;
-            padding: 10px;
-            border: 1px solid #ddd;
-            background: #fff;
-            border-radius: 5px;
-        }
+        input[type="file"] { display: none; }
 
-        /* বাটন */
-        .btn-analyze {
-            background: #0056b3;
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(to right, var(--primary), var(--dark));
             color: white;
-            padding: 12px 35px;
             border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 15px;
+            border-radius: 12px;
+            font-size: 1.2rem;
             font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 10px 15px -3px rgba(8, 145, 178, 0.3);
         }
 
-        .btn-analyze:hover {
-            background: #004494;
+        .submit-btn:hover {
             transform: translateY(-2px);
         }
 
-        .btn-pdf {
-            background: #e74c3c;
-            color: white;
-            padding: 10px 25px;
-            border: none;
-            cursor: pointer;
-            margin-top: 20px;
+        /* 🔥 NEW SCANNER ANIMATION 🔥 */
+        .loader-overlay {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+        
+        .scanner-box {
+            width: 120px;
+            height: 120px;
+            background: #000;
+            border: 4px solid var(--primary);
+            border-radius: 15px;
+            position: relative;
+            margin: 0 auto 20px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(8, 145, 178, 0.4);
+        }
+
+        .scanner-icon {
+            font-size: 60px;
+            color: rgba(255, 255, 255, 0.2);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .laser-line {
+            width: 100%;
+            height: 4px;
+            background: var(--scanner);
+            position: absolute;
+            top: 0;
+            left: 0;
+            box-shadow: 0 0 15px var(--scanner), 0 0 30px var(--scanner);
+            animation: scan 1.5s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        .analyzing-text {
+            font-size: 1.2rem;
             font-weight: bold;
-            border-radius: 5px;
-            text-decoration: none;
-            display: inline-block;
+            color: var(--primary);
+            animation: blink 1.5s infinite;
         }
 
-        .btn-pdf:hover {
-            background: #c0392b;
+        @keyframes blink { 50% { opacity: 0.5; } }
+
+        /* Report Design */
+        .report-paper {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+            margin-top: 2rem;
+            border-top: 6px solid var(--primary);
+            position: relative;
         }
 
-        /* রিপোর্ট সেকশন */
-        .report-box {
-            margin-top: 30px;
-            border: 1px solid #ddd;
-            padding: 30px;
-            border-radius: 8px;
-            background: #fff;
+        .qr-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 80px;
+            height: 80px;
+            opacity: 0.8;
         }
 
-        .report-meta {
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-            color: #555;
-            font-size: 14px;
-        }
-
-        .report-content {
-            white-space: pre-wrap;
+        .report-text {
+            white-space: pre-line;
+            font-size: 1.1rem;
             line-height: 1.8;
-            text-align: justify;
-            font-size: 16px;
-            color: #2c3e50;
+            color: #334155;
         }
 
-        /* সিগনেচার */
-        .signature {
+        .action-bar {
             display: flex;
-            justify-content: space-between;
-            margin-top: 80px;
-            padding-top: 20px;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: flex-end;
         }
 
-        .sign-block {
-            text-align: center;
-            width: 200px;
+        .icon-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: none;
+            background: #f1f5f9;
+            color: var(--dark);
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
         }
 
-        .sign-line {
-            border-top: 1px solid #333;
-            padding-top: 5px;
-            font-weight: bold;
+        .icon-btn:hover {
+            background: var(--primary);
+            color: white;
         }
 
-        .footer {
-            text-align: center;
-            margin-top: 50px;
-            font-size: 12px;
-            color: #aaa;
-            border-top: 1px solid #eee;
-            padding-top: 20px;
+        @media (max-width: 600px) {
+            .upload-grid { grid-template-columns: 1fr; }
+            .brand-header h1 { font-size: 1.8rem; }
         }
     </style>
 </head>
-
 <body>
 
-    <div class="container">
-        <div class="header">
-            <h1>Yeasin Medical Diagnostics</h1>
-            <p>Advanced Automated Radiology System | Authored by <b>Yeasin Kabir</b></p>
+<div class="container">
+    <div class="helpline-badge">
+        <i class="fa-solid fa-phone"></i> 01851715713
+    </div>
+
+    <div class="brand-header">
+        <h1><i class="fa-solid fa-staff-snake"></i> Yeasin Diagnostics</h1>
+        <p style="margin-top:5px; color:#94a3b8; font-size: 0.9rem;">Advanced AI Radiology System</p>
+    </div>
+
+    {% if error %}
+    <div style="background:#fee2e2; color:#b91c1c; padding:15px; border-radius:10px; text-align:center; margin-bottom:20px;">
+        <i class="fa-solid fa-circle-xmark"></i> {{ error }}
+    </div>
+    {% endif %}
+
+    {% if not report %}
+    <form action="/" method="post" enctype="multipart/form-data" onsubmit="startAnalysis()">
+        <div class="upload-grid">
+            <label class="upload-btn">
+                <i class="fa-solid fa-image" style="font-size: 2rem; color: #94a3b8;"></i>
+                <p>গ্যালারি</p>
+                <input type="file" name="xray_image" id="fileInput" accept="image/*" onchange="fileSelected(this)">
+            </label>
+
+            <label class="camera-btn">
+                <i class="fa-solid fa-camera" style="font-size: 2rem; margin-bottom: 5px;"></i>
+                <p style="margin:0;">ক্যামেরা</p>
+                <input type="file" name="xray_image" capture="environment" accept="image/*" onchange="fileSelected(this)">
+            </label>
+        </div>
+        
+        <p id="fileName" style="text-align:center; color:var(--primary); font-weight:bold; height:20px;"></p>
+
+        <button type="submit" class="submit-btn">
+            <i class="fa-solid fa-bolt"></i> বিশ্লেষণ শুরু করুন
+        </button>
+    </form>
+
+    <div class="loader-overlay" id="loader">
+        <div class="scanner-box">
+            <i class="fa-solid fa-skeleton scanner-icon"></i>
+            <div class="laser-line"></div>
+        </div>
+        <div class="analyzing-text">AI স্ক্যান করছে...</div>
+        <p style="color:#64748b; font-size:0.9rem;">গভীরভাবে বিশ্লেষণ করা হচ্ছে</p>
+    </div>
+    {% endif %}
+
+    {% if report %}
+    <div class="report-paper">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Yeasin_AI_Verified" class="qr-badge" alt="QR">
+
+        <div style="border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px; color:#64748b;">
+            <span><strong>তারিখ:</strong> <script>document.write(new Date().toLocaleDateString('bn-BD'))</script></span>
+            <span style="float:right;"><strong>Case ID:</strong> #<script>document.write(Math.floor(100000 + Math.random() * 900000))</script></span>
         </div>
 
-        <form action="/" method="post" enctype="multipart/form-data">
-            <div class="upload-area">
-                <h3 style="color: #0056b3; margin-top: 0;">📤 রোগীর এক্স-রে আপলোড করুন</h3>
-                <p style="color: #666; font-size: 13px;">সঠিক রিপোর্টের জন্য পরিষ্কার ছবি দিন</p>
-                <input type="file" name="xray_image" accept="image/*" required>
-                <br>
-                <button type="submit" class="btn-analyze">ANALYSIS শুরু করুন</button>
-            </div>
-        </form>
+        <h2 style="color:var(--dark); margin-top:0;">📋 রেডিওলজি রিপোর্ট</h2>
+        <div class="report-text" id="reportContent">{{ report }}</div>
 
-        {% if error %}
-        <div
-            style="background: #fadbd8; color: #721c24; padding: 15px; border-radius: 5px; margin-top: 20px; text-align: center; border: 1px solid #f5c6cb;">
-            ⚠️ {{ error }}
-        </div>
-        {% endif %}
-
-        {% if report %}
-        <div style="text-align: center; margin-top: 30px;">
-            <h2 style="color: #27ae60;">✅ সাকসেসফুল! রিপোর্ট তৈরি হয়েছে</h2>
-            <button onclick="downloadPDF()" class="btn-pdf">📥 Download Official PDF</button>
-            <br><br>
-        </div>
-
-        <div id="printable-report" class="report-box">
-            <div class="report-meta">
-                <div><strong>Ref No:</strong> YK-AUTO/2026/BD</div>
-                <div><strong>Date:</strong>
-                    <script>document.write(new Date().toLocaleDateString())</script>
-                </div>
-            </div>
-
-            <div style="text-align: center; margin-bottom: 30px;">
-                <h2 style="margin: 0; color: #2c3e50; text-decoration: underline;">DIAGNOSTIC IMAGING REPORT</h2>
-                <small>Generated by Yeasin Diagnostics AI Core</small>
-            </div>
-
-            <div class="report-content">
-                {{ report }}
-            </div>
-
-            <div class="signature">
-                <div class="sign-block">
-                    <div class="sign-line">Radiology Department</div>
-                    <small style="color: #888;">(System Generated Finding)</small>
-                </div>
-                <div class="sign-block">
-                    <div class="sign-line">Yeasin Kabir</div>
-                    <small>Chief Administrator</small>
-                </div>
-            </div>
-
-            <p
-                style="text-align: center; font-size: 10px; color: #888; margin-top: 40px; border-top: 1px solid #eee; padding-top: 10px;">
-                Disclaimer: This report is assisting in nature. Please consult a physical doctor for final medication.
-            </p>
-        </div>
-        {% endif %}
-
-        <div class="footer">
-            System Developed & Maintained by <b>Yeasin Kabir</b> <br>
-            &copy; 2026 All Rights Reserved.
+        <div style="background:#fff1f2; border-left:4px solid var(--danger); padding:15px; margin-top:20px; color:#9f1239;">
+            <i class="fa-solid fa-shield-halved"></i> <strong>সতর্কতা:</strong> এটি AI রিপোর্ট। চূড়ান্ত সিদ্ধান্তের জন্য ডাক্তার  পরামর্শ নিন।
         </div>
     </div>
 
-    <script>
-        function downloadPDF() {
-            var element = document.getElementById('printable-report');
-            var opt = {
-                margin: 0.5,
-                filename: 'Medical_Report_Yeasin_Kabir.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-            };
-            html2pdf().set(opt).from(element).save();
+    <div class="action-bar">
+        <button class="icon-btn" onclick="readReport()"><i class="fa-solid fa-volume-high"></i></button>
+        <button class="icon-btn" onclick="window.print()"><i class="fa-solid fa-print"></i></button>
+        <a href="/" class="icon-btn"><i class="fa-solid fa-rotate-right"></i></a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    function fileSelected(input) {
+        if(input.files && input.files[0]) {
+            document.getElementById('fileName').innerHTML = '<i class="fa-solid fa-check"></i> ' + input.files[0].name;
         }
-    </script>
+    }
+
+    function startAnalysis() {
+        document.querySelector('form').style.display = 'none';
+        document.getElementById('loader').style.display = 'block';
+    }
+
+    function readReport() {
+        const text = document.getElementById('reportContent').innerText;
+        const speech = new SpeechSynthesisUtterance(text);
+        speech.lang = 'bn-BD';
+        window.speechSynthesis.speak(speech);
+    }
+</script>
 
 </body>
-
 </html>
