@@ -4,20 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yeasin Diagnostics Portal</title>
-    
     <link rel="icon" href="https://img.icons8.com/fluency/48/hospital-sign.png" type="image/png">
-    
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root {
-            --primary: #0891b2;
-            --dark: #0f172a;
-            --accent: #22d3ee;
-            --glass: rgba(15, 23, 42, 0.95);
-        }
-
         body {
             font-family: 'Hind Siliguri', sans-serif;
             background: #020617;
@@ -29,176 +20,132 @@
             color: #e2e8f0;
             user-select: none;
         }
-
-        /* 🌈 RGB Border Animation */
-        .rgb-wrapper {
-            position: relative;
-            background: var(--glass);
-            border-radius: 24px;
-            padding: 3px;
-            width: 95%;
-            max-width: 850px;
-            overflow: hidden;
-            box-shadow: 0 0 100px rgba(8, 145, 178, 0.3);
-        }
-
-        .rgb-wrapper::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(transparent, #0891b2, #22d3ee, #00ff41, #0891b2, transparent);
-            animation: rotate 4s linear infinite;
-        }
-        @keyframes rotate { 100% { transform: rotate(1turn); } }
-
         .container {
-            position: relative;
             background: #0f172a;
-            border-radius: 22px;
-            padding: 2.5rem;
-            z-index: 1;
-        }
-
-        /* Header */
-        .brand-header {
+            padding: 2rem;
+            border-radius: 20px;
+            width: 95%;
+            max-width: 800px;
+            box-shadow: 0 0 50px rgba(8, 145, 178, 0.3);
+            border: 2px solid #0891b2;
             text-align: center;
-            border-bottom: 1px solid #1e293b;
-            padding-bottom: 1.5rem;
-            margin-bottom: 2rem;
         }
-        .brand-header h1 { color: white; font-size: 2.2rem; margin: 0; letter-spacing: 1px; }
-        .tagline { color: #94a3b8; font-size: 0.9rem; font-family: monospace; }
+        h1 { color: #22d3ee; margin: 0; }
+        .upload-box {
+            border: 2px dashed #334155;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .upload-box:hover { border-color: #22d3ee; background: #1e293b; }
         
-        .helpline-badge {
-            position: absolute; top: 25px; right: 25px;
-            background: rgba(8, 145, 178, 0.2); color: var(--accent);
-            border: 1px solid var(--primary); padding: 5px 15px;
-            border-radius: 50px; font-size: 0.85rem; font-family: monospace;
+        .btn {
+            background: linear-gradient(to right, #0891b2, #06b6d4);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
         }
-
-        /* Upload Area */
-        .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
-        .upload-btn {
-            border: 1px dashed #334155; padding: 30px; border-radius: 16px;
-            text-align: center; cursor: pointer; transition: 0.3s; background: #1e293b;
+        
+        /* রিপোর্ট এরিয়া */
+        .report-area {
+            background: #f8fafc;
+            color: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+            border-top: 5px solid #0891b2;
         }
-        .upload-btn:hover { border-color: var(--accent); background: #164e63; }
-        input[type="file"] { display: none; }
-
-        .submit-btn {
-            width: 100%; padding: 18px;
-            background: linear-gradient(to right, #0891b2, #0e7490);
-            color: white; border: none; border-radius: 12px;
-            font-size: 1.1rem; font-weight: bold; cursor: pointer;
-            transition: 0.3s; letter-spacing: 1px;
+        .signature {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.8rem;
+            color: #0891b2;
+            margin-top: 10px;
+            text-align: right;
         }
-        .submit-btn:hover { box-shadow: 0 0 25px rgba(34, 211, 238, 0.4); transform: scale(1.02); }
-
-        /* Loader */
-        .loader-overlay { display: none; text-align: center; padding: 3rem; }
-        .scanner-box { width: 100%; height: 4px; background: #1e293b; border-radius: 10px; position: relative; overflow: hidden; margin-bottom: 20px; }
-        .laser-line { width: 40%; height: 100%; background: var(--accent); position: absolute; animation: loadLine 1.5s infinite ease-in-out; box-shadow: 0 0 15px var(--accent); }
-        @keyframes loadLine { 0% { left: -40%; } 100% { left: 100%; } }
-
-        /* Report Paper */
-        .report-paper {
-            background: #f8fafc; color: #1e293b; padding: 2.5rem;
-            border-radius: 16px; margin-top: 2rem; position: relative;
-            border-top: 5px solid var(--primary);
-        }
-
-        .report-text {
-            white-space: pre-line; font-size: 1.15rem; line-height: 1.8;
-            color: #334155; font-weight: 500; min-height: 100px;
-        }
-
-        /* ⌨️ Typewriter Cursor Effect */
-        .cursor {
-            display: inline-block; width: 3px; height: 20px;
-            background-color: var(--primary);
-            animation: blink 0.8s infinite; vertical-align: middle;
-        }
-        @keyframes blink { 50% { opacity: 0; } }
-
-        /* ✍️ Digital Signature Area */
-        .signature-box {
-            margin-top: 40px; display: flex; justify-content: space-between;
-            align-items: flex-end; border-top: 2px dashed #cbd5e1; padding-top: 20px;
-        }
-        .sign-area { text-align: center; }
-        .digital-sign {
-            font-family: 'Dancing Script', cursive; /* পেঁচানো হাতের লেখা ফন্ট */
-            font-size: 2rem; color: #0891b2; margin-bottom: 5px;
-            transform: rotate(-5deg); display: inline-block;
-        }
-        .sign-role { font-size: 0.85rem; color: #64748b; font-weight: 600; text-transform: uppercase; }
-
-        @media print {
-            body * { visibility: hidden; }
-            .report-paper, .report-paper * { visibility: visible; }
-            .report-paper { position: absolute; left: 0; top: 0; width: 100%; }
-        }
+        .role { font-size: 0.8rem; color: #64748b; text-align: right; }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
-<audio id="clickSound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
-<audio id="scanSound" src="https://assets.mixkit.co/active_storage/sfx/212/212-preview.mp3"></audio>
-<audio id="typeSound" src="https://assets.mixkit.co/active_storage/sfx/2578/2578-preview.mp3"></audio>
+<div class="container">
+    <h1>Yeasin Diagnostics</h1>
+    <p style="color:#94a3b8;">Neural AI Engine v3.0</p>
+    <div style="background:#0f766e; color:white; display:inline-block; padding:5px 15px; border-radius:50px; margin-bottom:20px;">
+        <i class="fa-solid fa-phone"></i> Helpline: 01851715713
+    </div>
 
-<div class="rgb-wrapper">
-    <div class="container">
-        <div class="helpline-badge"><i class="fa-solid fa-headset"></i> Dev Support: 01851715713</div>
+    {% if error %}
+    <div style="background:#fee2e2; color:red; padding:10px; border-radius:5px; margin-bottom:10px;">
+        {{ error }}
+    </div>
+    {% endif %}
 
-        <div class="brand-header">
-            <h1>Yeasin Diagnostics</h1>
-            <div class="tagline">NEURAL AI ENGINE v3.0 | DEVELOPED BY YEASIN KABIR</div>
+    {% if not report %}
+    <form action="/" method="post" enctype="multipart/form-data">
+        <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem;"></i>
+            <p>এখানে ক্লিক করে এক্স-রে আপলোড করুন</p>
+            <input type="file" name="xray_image" id="fileInput" style="display:none" onchange="document.querySelector('p').innerText = '✅ ফাইল সিলেক্ট হয়েছে!'">
         </div>
+        <button type="submit" class="btn">বিশ্লেষণ শুরু করুন</button>
+    </form>
+    {% endif %}
 
-        {% if error %}
-        <div style="background:rgba(239,68,68,0.2); color:#fca5a5; padding:15px; border-radius:10px; text-align:center; border:1px solid #ef4444;">
-            <i class="fa-solid fa-triangle-exclamation"></i> {{ error }}
+    {% if report %}
+    <div class="report-area">
+        <h3 style="color:#0891b2; border-bottom:1px solid #ccc; padding-bottom:5px;">DIGITAL REPORT</h3>
+        
+        <div id="typewriter" style="white-space: pre-line; line-height: 1.6; font-size: 1.1rem;"></div>
+        
+        <div id="hiddenText" style="display:none;">{{ report }}</div>
+
+        <div style="margin-top:30px; border-top:1px dashed #ccc; padding-top:10px;">
+            <div class="signature">Yeasin Kabir</div>
+            <div class="role">Lead AI Developer</div>
         </div>
-        {% endif %}
+    </div>
+    
+    <div style="margin-top:20px;">
+        <button onclick="speak()" style="padding:10px 20px; border-radius:50px; border:1px solid white; background:none; color:white; cursor:pointer;">
+            🔊 শুনুন
+        </button>
+        <a href="/" style="padding:10px 20px; border-radius:50px; background:#0891b2; color:white; text-decoration:none; margin-left:10px;">
+            🔄 নতুন স্ক্যান
+        </a>
+    </div>
 
-        {% if not report %}
-        <form action="/" method="post" enctype="multipart/form-data" onsubmit="startAnalysis()">
-            <div class="upload-grid">
-                <label class="upload-btn" onclick="playSound()">
-                    <i class="fa-solid fa-folder-open" style="font-size: 2rem; color: #94a3b8;"></i>
-                    <p style="margin:10px 0 0; color:#cbd5e1;">ফাইল সিলেক্ট</p>
-                    <input type="file" name="xray_image" id="fileInput" accept="image/*" onchange="fileSelected(this)">
-                </label>
+    <script>
+        // টাইপরাইটার স্ক্রিপ্ট
+        const text = document.getElementById('hiddenText').innerText;
+        const box = document.getElementById('typewriter');
+        let i = 0;
+        function type() {
+            if (i < text.length) {
+                box.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(type, 10); // স্পিড
+            }
+        }
+        window.onload = type;
 
-                <label class="upload-btn" style="background: #0f172a; border-color: var(--primary);" onclick="playSound()">
-                    <i class="fa-solid fa-camera" style="font-size: 2rem; color: var(--accent);"></i>
-                    <p style="margin:10px 0 0; color:#22d3ee;">ক্যামেরা</p>
-                    <input type="file" name="xray_image" capture="environment" accept="image/*" onchange="fileSelected(this)">
-                </label>
-            </div>
-            
-            <p id="fileName" style="text-align:center; color:var(--accent); font-family:monospace; height:20px;"></p>
+        // কথা বলার স্ক্রিপ্ট
+        function speak() {
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'bn-BD';
+            window.speechSynthesis.speak(speech);
+        }
+    </script>
+    {% endif %}
 
-            <button type="submit" class="submit-btn" onclick="playSound()">
-                <i class="fa-solid fa-microchip"></i> বিশ্লেষণ শুরু করুন
-            </button>
-        </form>
+</div>
 
-        <div class="loader-overlay" id="loader">
-            <div class="scanner-box"><div class="laser-line"></div></div>
-            <div style="font-family:monospace; color:var(--accent); letter-spacing:2px; animation: blink 1s infinite;">
-                SYSTEM ANALYZING BIOMETRIC DATA...
-            </div>
-        </div>
-        {% endif %}
-
-        {% if report %}
-        <div class="report-paper">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Verified_By_Yeasin_Algorithm" style="position:absolute; top:20px; right:20px; width:70px; opacity:0.8;" alt="QR">
-
-            <div style="border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px;">
-                <h3 style="margin:0; color:#0891b2;">DIGITAL DIAGNOSTIC REPORT</h3>
-                <div style="font-size:0.
+</body>
+</html>

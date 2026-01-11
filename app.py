@@ -5,17 +5,17 @@ from PIL import Image
 
 app = Flask(__name__)
 
-# Render-এর গোপন ভল্ট থেকে চাবি নেওয়া হচ্ছে
+# API Key সেটআপ
 GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
 
-# চাবি ঠিকমতো আছে কি না চেক করা (Error prevention)
+# API Key না থাকলে এরর দেখাবে (সার্ভার ক্র্যাশ করবে না)
 if not GOOGLE_API_KEY:
-    print("Error: GOOGLE_API_KEY not found in environment variables!")
+    print("⚠️ WARNING: GOOGLE_API_KEY not found! Check Render Environment settings.")
 
 genai.configure(api_key=GOOGLE_API_KEY)
 
-# ফাস্ট এবং ফ্রি মডেল
-model = genai.GenerativeModel('gemini-2.5-flash-lite-preview-09-2025')
+# সবথেকে স্টেবল মডেল ব্যবহার করা হচ্ছে (যাতে মডেল নিয়ে এরর না হয়)
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -23,51 +23,40 @@ def index():
     error = None
 
     if request.method == 'POST':
-        # ফাইল আছে কি না চেক করা
-        if 'xray_image' not in request.files:
-            return render_template('index.html', error="ফাইল পাওয়া যায়নি।")
-        
-        file = request.files['xray_image']
-        
-        if file.filename == '':
-            return render_template('index.html', error="কোনো ছবি সিলেক্ট করা হয়নি।")
+        try:
+            if 'xray_image' not in request.files:
+                return render_template('index.html', error="ফাইল পাওয়া যায়নি।")
+            
+            file = request.files['xray_image']
+            
+            if file.filename == '':
+                return render_template('index.html', error="কোনো ছবি সিলেক্ট করা হয়নি।")
 
-        if file:
-            try:
+            if file:
                 img = Image.open(file)
                 
-                # AI-কে নির্দেশ দেওয়া (Prompt)
+                # প্রম্পট (নির্দেশনা)
                 prompt = """
-                Act as a professional medical imaging expert. Analyze this image.
+                Act as a specialized Doctor. Analyze this X-ray/Medical Image.
                 Output MUST be in BENGALI (বাংলা).
                 
-                Strict Output Format:
-                
-                🔴 মূল সমস্যা (Diagnosis): [Identify the main disease/issue in 2-4 words]
-
-                ------------------------------------------------
-
+                Format:
+                🔴 রোগ নির্ণয় (Diagnosis): [Main disease name in 2-3 words]
+                -----------------------------------
                 📋 বিস্তারিত রিপোর্ট:
-                ১. পর্যবেক্ষণ (Findings): [Detailed findings]
-                ২. পরামর্শ (Advice): [General suggestions]
+                ১. পর্যবেক্ষণ (Findings): [Details]
+                ২. পরামর্শ (Advice): [Medicine/Test]
                 
-                If the image is not an X-ray/MRI, say "এটি কোনো মেডিকেল রিপোর্ট নয়।"
+                If it's not a medical image, say 'এটি কোনো মেডিকেল রিপোর্ট নয়।'
                 """
                 
                 response = model.generate_content([prompt, img])
-                report = response.text.replace('*', '') # ফরম্যাটিং ঠিক করা
-            
-            except Exception as e:
-                # এরর লগ প্রিন্ট করা (Render Logs-এ দেখার জন্য)
-                print(f"Error occurred: {e}")
-                error_msg = str(e)
+                report = response.text.replace('*', '')
                 
-                if "429" in error_msg:
-                    error = "সার্ভার ব্যস্ত। ২ মিনিট পর চেষ্টা করুন।"
-                elif "403" in error_msg:
-                    error = "API Key সমস্যা। চাবি পরিবর্তন করুন।"
-                else:
-                    error = "রিপোর্ট তৈরি করা যায়নি। আবার চেষ্টা করুন।"
+        except Exception as e:
+            # আসল সমস্যাটি টার্মিনালে প্রিন্ট হবে
+            print(f"❌ Error: {e}") 
+            error = "সার্ভারে সমস্যা হয়েছে। দয়া করে অন্য ছবি দিন বা ২ মিনিট পর চেষ্টা করুন।"
 
     return render_template('index.html', report=report, error=error)
 
