@@ -3,149 +3,402 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yeasin Diagnostics Portal</title>
-    <link rel="icon" href="https://img.icons8.com/fluency/48/hospital-sign.png" type="image/png">
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <title>Yeasin Medical Diagnostics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
+        :root {
+            --primary: #0891b2;
+            --dark: #164e63;
+            --scanner: #00ff41;
+        }
+
         body {
             font-family: 'Hind Siliguri', sans-serif;
-            background: #020617;
+            background: #0f172a; /* ডার্ক ব্যাকগ্রাউন্ড যাতে RGB লাইট ফুটে ওঠে */
             min-height: 100vh;
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #e2e8f0;
-            user-select: none;
+            color: #334155;
+            user-select: none; /* টেক্সট কপি করা বন্ধ */
+            -webkit-user-select: none;
         }
-        .container {
-            background: #0f172a;
-            padding: 2rem;
-            border-radius: 20px;
+
+        /* 🌈 RGB Border Animation 🌈 */
+        .rgb-wrapper {
+            position: relative;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 4px; /* বর্ডারের পুরুত্ব */
             width: 95%;
-            max-width: 800px;
-            box-shadow: 0 0 50px rgba(8, 145, 178, 0.3);
-            border: 2px solid #0891b2;
-            text-align: center;
+            max-width: 850px;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
         }
-        h1 { color: #22d3ee; margin: 0; }
-        .upload-box {
-            border: 2px dashed #334155;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 10px;
+
+        .rgb-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                transparent, 
+                #ff0000, 
+                #ff7f00, 
+                #ffff00, 
+                #00ff00, 
+                #0000ff, 
+                #4b0082, 
+                #8f00ff, 
+                transparent
+            );
+            animation: rotate 4s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes rotate {
+            100% { transform: rotate(1turn); }
+        }
+
+        .container {
+            position: relative;
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            z-index: 1;
+        }
+
+        /* Header Style */
+        .brand-header {
+            text-align: center;
+            border-bottom: 2px dashed #cbd5e1;
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .brand-header h1 {
+            color: var(--dark);
+            font-size: 2.5rem;
+            margin: 0;
+        }
+
+        .helpline-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #22c55e;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        /* Upload Area */
+        .upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .upload-btn {
+            border: 2px dashed #94a3b8;
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            background: #f8fafc;
+        }
+
+        .upload-btn:hover {
+            border-color: var(--primary);
+            background: #ecfeff;
+        }
+
+        .camera-btn {
+            background: var(--dark);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        input[type="file"] { display: none; }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(to right, var(--primary), var(--dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
         }
-        .upload-box:hover { border-color: #22d3ee; background: #1e293b; }
+
+        /* Scanner Animation */
+        .loader-overlay {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
         
-        .btn {
-            background: linear-gradient(to right, #0891b2, #06b6d4);
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            cursor: pointer;
+        .scanner-box {
+            width: 120px;
+            height: 120px;
+            background: #000;
+            border: 4px solid var(--primary);
+            border-radius: 15px;
+            position: relative;
+            margin: 0 auto 20px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(8, 145, 178, 0.4);
+        }
+
+        .scanner-icon {
+            font-size: 60px;
+            color: rgba(255, 255, 255, 0.2);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .laser-line {
             width: 100%;
+            height: 4px;
+            background: var(--scanner);
+            position: absolute;
+            top: 0;
+            left: 0;
+            box-shadow: 0 0 15px var(--scanner), 0 0 30px var(--scanner);
+            animation: scan 1.5s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0; opacity: 0; }
+            50% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        /* Report Paper */
+        .report-paper {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+            margin-top: 2rem;
+            border-top: 6px solid var(--primary);
+            position: relative;
+        }
+
+        .qr-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 80px;
+            height: 80px;
+            opacity: 0.8;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+
+        .icon-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: none;
+            background: #f1f5f9;
+            color: var(--dark);
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .icon-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* স্ক্রিনশট প্রটেকশন ওভারলে */
+        .screenshot-warning {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: black;
+            color: red;
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
             font-weight: bold;
         }
-        
-        /* রিপোর্ট এরিয়া */
-        .report-area {
-            background: #f8fafc;
-            color: #1e293b;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            text-align: left;
-            border-top: 5px solid #0891b2;
+
+        @media print {
+            body { display: none; } /* প্রিন্ট করলে সাদা পেজ আসবে */
         }
-        .signature {
-            font-family: 'Dancing Script', cursive;
-            font-size: 1.8rem;
-            color: #0891b2;
-            margin-top: 10px;
-            text-align: right;
-        }
-        .role { font-size: 0.8rem; color: #64748b; text-align: right; }
     </style>
 </head>
-<body>
-
-<div class="container">
-    <h1>Yeasin Diagnostics</h1>
-    <p style="color:#94a3b8;">Neural AI Engine v3.0</p>
-    <div style="background:#0f766e; color:white; display:inline-block; padding:5px 15px; border-radius:50px; margin-bottom:20px;">
-        <i class="fa-solid fa-phone"></i> Helpline: 01851715713
-    </div>
-
-    {% if error %}
-    <div style="background:#fee2e2; color:red; padding:10px; border-radius:5px; margin-bottom:10px;">
-        {{ error }}
-    </div>
-    {% endif %}
-
-    {% if not report %}
-    <form action="/" method="post" enctype="multipart/form-data">
-        <div class="upload-box" onclick="document.getElementById('fileInput').click()">
-            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem;"></i>
-            <p>এখানে ক্লিক করে এক্স-রে আপলোড করুন</p>
-            <input type="file" name="xray_image" id="fileInput" style="display:none" onchange="document.querySelector('p').innerText = '✅ ফাইল সিলেক্ট হয়েছে!'">
+<body oncontextmenu="return false;"> <div class="rgb-wrapper">
+    <div class="container">
+        <div class="helpline-badge">
+            <i class="fa-solid fa-phone"></i> 01851715713
         </div>
-        <button type="submit" class="btn">বিশ্লেষণ শুরু করুন</button>
-    </form>
-    {% endif %}
 
-    {% if report %}
-    <div class="report-area">
-        <h3 style="color:#0891b2; border-bottom:1px solid #ccc; padding-bottom:5px;">DIGITAL REPORT</h3>
-        
-        <div id="typewriter" style="white-space: pre-line; line-height: 1.6; font-size: 1.1rem;"></div>
-        
-        <div id="hiddenText" style="display:none;">{{ report }}</div>
-
-        <div style="margin-top:30px; border-top:1px dashed #ccc; padding-top:10px;">
-            <div class="signature">Yeasin Kabir</div>
-            <div class="role">Lead AI Developer</div>
+        <div class="brand-header">
+            <h1><i class="fa-solid fa-staff-snake"></i> Yeasin Diagnostics</h1>
+            <p style="margin-top:5px; color:#94a3b8;">Advanced AI Radiology System</p>
         </div>
+
+        {% if error %}
+        <div style="background:#fee2e2; color:#b91c1c; padding:15px; border-radius:10px; text-align:center; margin-bottom:20px;">
+            <i class="fa-solid fa-circle-xmark"></i> {{ error }}
+        </div>
+        {% endif %}
+
+        {% if not report %}
+        <form action="/" method="post" enctype="multipart/form-data" onsubmit="startAnalysis()">
+            <div class="upload-grid">
+                <label class="upload-btn">
+                    <i class="fa-solid fa-image" style="font-size: 2rem; color: #94a3b8;"></i>
+                    <p>গ্যালারি</p>
+                    <input type="file" name="xray_image" id="fileInput" accept="image/*" onchange="fileSelected(this)">
+                </label>
+
+                <label class="camera-btn">
+                    <i class="fa-solid fa-camera" style="font-size: 2rem; margin-bottom: 5px;"></i>
+                    <p style="margin:0;">ক্যামেরা</p>
+                    <input type="file" name="xray_image" capture="environment" accept="image/*" onchange="fileSelected(this)">
+                </label>
+            </div>
+            
+            <p id="fileName" style="text-align:center; color:var(--primary); font-weight:bold; height:20px;"></p>
+
+            <button type="submit" class="submit-btn">
+                <i class="fa-solid fa-bolt"></i> বিশ্লেষণ শুরু করুন
+            </button>
+        </form>
+
+        <div class="loader-overlay" id="loader">
+            <div class="scanner-box">
+                <i class="fa-solid fa-skeleton scanner-icon"></i>
+                <div class="laser-line"></div>
+            </div>
+            <div style="font-size:1.2rem; font-weight:bold; color:var(--primary);">AI স্ক্যান করছে...</div>
+        </div>
+        {% endif %}
+
+        {% if report %}
+        <div class="report-paper">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Yeasin_AI_Verified" class="qr-badge" alt="QR">
+
+            <div style="border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px; color:#64748b;">
+                <span><strong>তারিখ:</strong> <script>document.write(new Date().toLocaleDateString('bn-BD'))</script></span>
+                <span style="float:right;"><strong>Case ID:</strong> #<script>document.write(Math.floor(100000 + Math.random() * 900000))</script></span>
+            </div>
+
+            <h2 style="color:var(--dark); margin-top:0;">📋 রেডিওলজি রিপোর্ট</h2>
+            <div class="report-text" id="reportContent" style="white-space: pre-line; line-height: 1.8;">{{ report }}</div>
+
+            <div style="background:#fff1f2; border-left:4px solid #e11d48; padding:15px; margin-top:20px; color:#9f1239;">
+                <i class="fa-solid fa-shield-halved"></i> <strong>সতর্কতা:</strong> এটি AI রিপোর্ট। চূড়ান্ত সিদ্ধান্তের জন্য ডাক্তারের পরামর্শ নিন।
+            </div>
+        </div>
+
+        <div class="action-bar">
+            <button class="icon-btn" onclick="speakReport()" title="শুনুন"><i class="fa-solid fa-volume-high"></i></button>
+            <a href="/" class="icon-btn"><i class="fa-solid fa-rotate-right"></i></a>
+        </div>
+        {% endif %}
     </div>
-    
-    <div style="margin-top:20px;">
-        <button onclick="speak()" style="padding:10px 20px; border-radius:50px; border:1px solid white; background:none; color:white; cursor:pointer;">
-            🔊 শুনুন
-        </button>
-        <a href="/" style="padding:10px 20px; border-radius:50px; background:#0891b2; color:white; text-decoration:none; margin-left:10px;">
-            🔄 নতুন স্ক্যান
-        </a>
-    </div>
-
-    <script>
-        // টাইপরাইটার স্ক্রিপ্ট
-        const text = document.getElementById('hiddenText').innerText;
-        const box = document.getElementById('typewriter');
-        let i = 0;
-        function type() {
-            if (i < text.length) {
-                box.innerHTML += text.charAt(i);
-                i++;
-                setTimeout(type, 10); // স্পিড
-            }
-        }
-        window.onload = type;
-
-        // কথা বলার স্ক্রিপ্ট
-        function speak() {
-            const speech = new SpeechSynthesisUtterance(text);
-            speech.lang = 'bn-BD';
-            window.speechSynthesis.speak(speech);
-        }
-    </script>
-    {% endif %}
-
 </div>
+
+<script>
+    // ফাইল সিলেক্ট হলে নাম দেখানো
+    function fileSelected(input) {
+        if(input.files && input.files[0]) {
+            document.getElementById('fileName').innerHTML = '<i class="fa-solid fa-check"></i> ' + input.files[0].name;
+        }
+    }
+
+    // লোডিং দেখানো
+    function startAnalysis() {
+        document.querySelector('form').style.display = 'none';
+        document.getElementById('loader').style.display = 'block';
+    }
+
+    // 🔊 ভয়েস ফিক্স: বাংলা ভয়েস খোঁজার অ্যাডভান্সড ফাংশন
+    function speakReport() {
+        const text = document.getElementById('reportContent').innerText;
+        
+        // কথা বলা বন্ধ করে নতুন করে শুরু করা
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        
+        // ব্রাউজারের সব ভয়েস লোড করা
+        let voices = window.speechSynthesis.getVoices();
+        
+        // বাংলা ভয়েস খোঁজা (Google Bangla, Microsoft Bangla ইত্যাদি)
+        let bnVoice = voices.find(v => v.lang.includes('bn'));
+
+        if (bnVoice) {
+            utterance.voice = bnVoice; // বাংলা পেলে সেট করবে
+        }
+        
+        utterance.lang = 'bn-BD';
+        utterance.rate = 1; // স্পিড নরমাল
+
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // ভয়েস লোড হওয়ার জন্য অপেক্ষা করা (ক্রোম ব্রাউজারের জন্য)
+    window.speechSynthesis.onvoiceschanged = function() {
+        window.speechSynthesis.getVoices();
+    };
+
+    // 🚫 স্ক্রিনশট ও কপি প্রতিরোধ
+    document.addEventListener('keydown', function(e) {
+        // Print Screen বাটন ডিজেবল করার চেষ্টা
+        if (e.key === 'PrintScreen') {
+            alert('Security Alert: Screenshots are disabled!');
+            navigator.clipboard.writeText(''); // ক্লিপবোর্ড ক্লিয়ার করা
+            return false;
+        }
+        // Ctrl+P (Print) বন্ধ
+        if (e.ctrlKey && e.key === 'p') {
+            e.preventDefault();
+            alert('Printing is disabled.');
+        }
+        // Ctrl+Shift+I (Inspect) বন্ধ
+        if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+            e.preventDefault();
+        }
+    });
+
+</script>
 
 </body>
 </html>

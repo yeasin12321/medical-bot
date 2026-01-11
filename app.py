@@ -3,16 +3,15 @@ from flask import Flask, render_template, request
 import google.generativeai as genai
 from PIL import Image
 
-# 👇 ভুল ছিল এখানে: Flask(_name_) -> সঠিক: Flask(__name__)
 app = Flask(__name__)
 
+# চাবি সরাসরি না বসিয়ে পরিবেশ থেকে নেওয়া হচ্ছে
 GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
 
-if not GOOGLE_API_KEY:
-    print("⚠️ Error: GOOGLE_API_KEY not found!")
-
 genai.configure(api_key=GOOGLE_API_KEY)
-model = genai.GenerativeModel('gemini-1.5-flash')
+
+# মডেল সেটআপ
+model = genai.GenerativeModel('gemini-2.5-flash-lite-preview-09-2025')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -20,36 +19,30 @@ def index():
     error = None
 
     if request.method == 'POST':
-        try:
-            if 'xray_image' not in request.files:
-                return render_template('index.html', error="ফাইল পাওয়া যায়নি।")
-            
-            file = request.files['xray_image']
-            if file.filename == '':
-                return render_template('index.html', error="কোনো ছবি সিলেক্ট করা হয়নি।")
+        if 'xray_image' not in request.files:
+            return render_template('index.html', error="ফাইল পাওয়া যায়নি।")
+        
+        file = request.files['xray_image']
+        if file.filename == '':
+            return render_template('index.html', error="কোনো ছবি সিলেক্ট করা হয়নি।")
 
-            if file:
+        if file:
+            try:
                 img = Image.open(file)
                 prompt = """
-                Act as a specialized Doctor. Analyze this X-ray/Medical Image.
-                Output MUST be in BENGALI (বাংলা).
-                Format:
-                🔴 রোগ নির্ণয় (Diagnosis): [Main disease name]
-                -----------------------------------
-                📋 বিস্তারিত রিপোর্ট:
-                ১. পর্যবেক্ষণ (Findings): [Details]
-                ২. পরামর্শ (Advice): [Medicine/Test]
+                Analyze this X-ray strictly as a professional Radiologist.
+                Do NOT mention AI. Provide a report in BENGALI (বাংলা).
+                Structure:
+                1. পর্যবেক্ষণ (Findings)
+                2. ইম্প্রেশন (Impression)
+                3. পরামর্শ (Advice)
                 """
                 response = model.generate_content([prompt, img])
                 report = response.text.replace('*', '')
-                
-        except Exception as e:
-            print(f"❌ Error: {e}")
-            error = "সার্ভারে সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।"
+            except Exception as e:
+                error = f"সমস্যা হয়েছে: {str(e)}"
 
     return render_template('index.html', report=report, error=error)
 
-# 👇 ভুল ছিল এখানেও: if _name_ == '_main_' -> সঠিক: if __name__ == '__main__'
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(debug=True, host='0.0.0.0')
