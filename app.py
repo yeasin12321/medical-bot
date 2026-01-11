@@ -3,10 +3,13 @@ from flask import Flask, render_template, request
 import google.generativeai as genai
 from PIL import Image
 
-app = Flask(_name_)
+# 👇 ভুল ছিল এখানে: Flask(_name_) -> সঠিক: Flask(__name__)
+app = Flask(__name__)
 
-# API Key সেটআপ
 GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
+
+if not GOOGLE_API_KEY:
+    print("⚠️ Error: GOOGLE_API_KEY not found!")
 
 genai.configure(api_key=GOOGLE_API_KEY)
 model = genai.GenerativeModel('gemini-1.5-flash')
@@ -22,24 +25,31 @@ def index():
                 return render_template('index.html', error="ফাইল পাওয়া যায়নি।")
             
             file = request.files['xray_image']
-            
             if file.filename == '':
                 return render_template('index.html', error="কোনো ছবি সিলেক্ট করা হয়নি।")
 
             if file:
                 img = Image.open(file)
-                prompt = "Analyze this medical image and provide a report in Bengali. Start with 'Diagnosis:' in bold."
-                
+                prompt = """
+                Act as a specialized Doctor. Analyze this X-ray/Medical Image.
+                Output MUST be in BENGALI (বাংলা).
+                Format:
+                🔴 রোগ নির্ণয় (Diagnosis): [Main disease name]
+                -----------------------------------
+                📋 বিস্তারিত রিপোর্ট:
+                ১. পর্যবেক্ষণ (Findings): [Details]
+                ২. পরামর্শ (Advice): [Medicine/Test]
+                """
                 response = model.generate_content([prompt, img])
                 report = response.text.replace('*', '')
                 
         except Exception as e:
-            print(f"Error: {e}")
-            error = "Server Error. Please try again."
+            print(f"❌ Error: {e}")
+            error = "সার্ভারে সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।"
 
     return render_template('index.html', report=report, error=error)
 
-if _name_ == '_main_':
-    # Render-এর জন্য এই পোর্ট সেটিং বাধ্যতামূলক
+# 👇 ভুল ছিল এখানেও: if _name_ == '_main_' -> সঠিক: if __name__ == '__main__'
+if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
